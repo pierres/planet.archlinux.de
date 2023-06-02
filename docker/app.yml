@@ -38,6 +38,7 @@ services:
     volumes:
       - ../app/dist:/app/app/dist:ro
       - ../api/public:/app/api/public:ro
+      - ../api/vendor:/app/api/vendor:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./nginx/include:/etc/nginx/include:ro
     userns_mode: host
