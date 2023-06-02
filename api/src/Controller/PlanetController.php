@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Repository\FeedRepository;
 use App\Repository\ItemRepository;
-use App\Request\PaginationRequest;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,29 +37,5 @@ class PlanetController extends AbstractController
         );
         $response->headers->set('Content-Type', 'application/atom+xml; charset=UTF-8');
         return $response;
-    }
-
-    #[Route(path: '/api/feeds', methods: ['GET'])]
-    #[Cache(smaxage: 600)]
-    public function feedsAction(PaginationRequest $paginationRequest): Response
-    {
-        return $this->json(
-            $this->feedRepository->findLatest(
-                $paginationRequest->getOffset(),
-                $paginationRequest->getLimit()
-            )
-        );
-    }
-
-    #[Route(path: '/api/items', methods: ['GET'])]
-    #[Cache(smaxage: 600)]
-    public function itemsAction(PaginationRequest $paginationRequest): Response
-    {
-        return $this->json(
-            $this->itemRepository->findLatest(
-                $paginationRequest->getOffset(),
-                $paginationRequest->getLimit()
-            )
-        );
     }
 }

@@ -2,19 +2,43 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Action\NotFoundAction;
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\FeedRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(
+            controller: NotFoundAction::class,
+            openapi: false,
+            read: false
+        ),
+        new GetCollection()
+    ],
+    normalizationContext: ['groups' => ['get'], 'skip_null_values' => false]
+)]
 class Feed
 {
+    #[ApiProperty(identifier: true)]
+    public function getId(): string
+    {
+        return sha1($this->getUrl());
+    }
+
     #[ORM\Id]
     #[ORM\Column(length: 191)]
     #[Assert\Url]
     #[Assert\Length(max: 191)]
+    #[ApiProperty(identifier: false)]
     private string $url;
 
     /**
@@ -26,10 +50,12 @@ class Feed
 
     #[ORM\Column]
     #[Assert\Length(min: 1, max: 255)]
+    #[Groups('get')]
     private string $title;
 
     #[ORM\Column(nullable: true)]
     #[Assert\Length(max: 255)]
+    #[Groups('get')]
     private ?string $description;
 
     #[ORM\Column(type: "datetime")]
@@ -38,6 +64,7 @@ class Feed
     #[ORM\Column]
     #[Assert\Url]
     #[Assert\Length(max: 255)]
+    #[Groups('get')]
     private string $link;
 
     public function __construct(string $url)
